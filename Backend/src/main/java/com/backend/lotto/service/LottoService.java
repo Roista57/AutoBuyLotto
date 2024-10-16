@@ -1,5 +1,6 @@
 package com.backend.lotto.service;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
@@ -25,6 +26,9 @@ public class LottoService {
         int resultMessage = 0;
 
         try {
+            // ChromeDriver를 자동으로 설치하도록 설정
+            WebDriverManager.chromedriver().setup();
+
             // ChromeOptions 설정 (헤드리스 모드 추가)
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");  // 헤드리스 모드 (GUI 없음)
