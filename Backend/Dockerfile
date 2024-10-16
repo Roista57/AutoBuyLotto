@@ -7,7 +7,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Step 3: Copy the jar file from host to container
-COPY build/libs/AutoBuyLotto.jar app.jar
+COPY build/libs/Backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Step 4: Expose the port your application will run on
 EXPOSE 8000
