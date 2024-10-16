@@ -52,7 +52,7 @@ public class LottoController {
     // 로또 판매 시간 체크
     private boolean isSaleTime(DayOfWeek dayOfWeek, LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(6, 0);  // 6시
-        LocalTime endTime = LocalTime.MIDNIGHT;    // 24시
+        LocalTime endTime = LocalTime.of(23, 59, 59);   // 24시
 
         // 추첨일(토요일) 조건: 오후 8시 마감
         if (dayOfWeek == DayOfWeek.SATURDAY) {
