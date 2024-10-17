@@ -95,6 +95,7 @@ public class LottoService {
             */
 
             driver.get("https://ol.dhlottery.co.kr/olotto/game/game645.do");
+            Thread.sleep(500);
 
             // 보유 예치금 확인
             WebElement moneyBalance = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#moneyBalance")));
@@ -119,19 +120,22 @@ public class LottoService {
 
                 WebElement btnSelectNum = driver.findElement(By.cssSelector("#btnSelectNum"));
                 btnSelectNum.click();
-
                 System.out.println("Shuffled list: " + result);
+                Thread.sleep(500);
             }
 
             // 구매 버튼 클릭
             WebElement btnBuy = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#btnBuy")));
             btnBuy.click();
+            Thread.sleep(500);
 
             WebElement popupLayerConfirm = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#popupLayerConfirm > div > div.btns > input:nth-child(1)")));
             popupLayerConfirm.click();
-
+            Thread.sleep(500);
+            
             WebElement closeLayer = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#closeLayer")));
             closeLayer.click();
+            Thread.sleep(500);
 
             resultMessage = 1;
         } catch (NoSuchElementException e) {
