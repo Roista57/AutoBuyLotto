@@ -109,7 +109,8 @@ public class LottoService {
 
                 List<Integer> result = list.subList(0, 6);
                 Collections.sort(result);
-
+                System.out.println("Shuffled list: " + result);
+                
                 for (int i = 0; i < 6; i++) {
                     String labelFor = "label[for='check645num" + result.get(i) + "']";
                     WebElement label = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(labelFor)));
@@ -118,7 +119,6 @@ public class LottoService {
 
                 WebElement btnSelectNum = driver.findElement(By.cssSelector("#btnSelectNum"));
                 btnSelectNum.click();
-                System.out.println("Shuffled list: " + result);
                 Thread.sleep(500);
             }
 
