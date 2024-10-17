@@ -30,12 +30,12 @@ public class LottoService {
         int resultMessage = 0;
 
         try {
-            // ChromeDriver를 자동으로 설치하도록 설정 (버전 명시)
-            WebDriverManager.chromedriver().driverVersion("114.0.5735.90").setup();
+            // ChromeDriver를 자동으로 설치하도록 설정
+            WebDriverManager.chromedriver().setup();
+
 
             // ChromeOptions 설정 (헤드리스 모드 추가)
             ChromeOptions options = new ChromeOptions();
-            // options.setBinary("/usr/bin/google-chrome"); // 필요하지 않음
             options.addArguments("--headless");  // 헤드리스 모드 (GUI 없음)
             options.addArguments("--no-sandbox"); // 특정 Linux 환경에서 권한 문제 해결
             options.addArguments("--disable-dev-shm-usage"); // /dev/shm 문제 해결
@@ -43,6 +43,8 @@ public class LottoService {
             options.addArguments("--window-size=1920x1080"); // 기본 화면 크기 설정
             options.addArguments("--remote-allow-origins=*"); // CORS 관련 오류 방지
             options.addArguments("--disable-popup-blocking"); // 팝업 차단 비활성화
+            options.addArguments("--disable-blink-features=AutomationControlled"); // 자동화 감지 방지
+
 
             // WebDriver 초기화 (ChromeDriver)
             driver = new ChromeDriver(options);
