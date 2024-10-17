@@ -39,11 +39,14 @@ RUN apt-get update && apt-get install -y \
     libu2f-udev \
     libvulkan1
 
-# Chrome 브라우저 설치
+# Chrome 브라우저 특정 버전 설치
+ARG CHROME_VERSION="google-chrome-stable=114.0.5735.198-1"
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
     && apt-get update \
-    && apt-get install -y google-chrome-stable
+    && apt-get install -y "$CHROME_VERSION" \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
 # Step 2: Set the working directory inside the container
 WORKDIR /app
