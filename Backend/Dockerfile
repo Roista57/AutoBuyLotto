@@ -1,9 +1,6 @@
-# Dockerfile1
-
-# 베이스 이미지 설정 (필요에 따라 Java 버전을 조정하세요)
 FROM openjdk:17-jdk-slim
 
-# 필수 패키지 및 종속성 설치
+# 필수 패키지 설치
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg2 \
@@ -37,25 +34,23 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     xdg-utils \
     libu2f-udev \
-    libvulkan1
+    libvulkan1 \
+    gnupg \
+    --no-install-recommends
 
-# Chrome 브라우저 특정 버전 설치
-ARG CHROME_VERSION="google-chrome-stable=114.0.5735.198-1"
+# Chrome 브라우저 설치
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
     && apt-get update \
-    && apt-get install -y "$CHROME_VERSION" \
+    && apt-get install -y google-chrome-stable \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Step 2: Set the working directory inside the container
+# 애플리케이션 JAR 파일을 컨테이너로 복사
+COPY build/libs/Backend-0.0.1-SNAPSHOT.jar /app/app.jar
+
+# 작업 디렉토리 설정
 WORKDIR /app
 
-# Step 3: Copy the jar file from host to container
-COPY build/libs/Backend-0.0.1-SNAPSHOT.jar app.jar
-
-# Step 4: Expose the port your application will run on
-EXPOSE 8000
-
-# Step 5: Command to run the application
+# 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
