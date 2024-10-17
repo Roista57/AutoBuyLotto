@@ -1,7 +1,7 @@
 # Dockerfile1
 
 # 베이스 이미지 설정 (필요에 따라 Java 버전을 조정하세요)
-FROM openjdk:17-jdk
+FROM openjdk:17-jdk-slim
 
 # 필수 패키지 및 종속성 설치
 RUN apt-get update && apt-get install -y \
