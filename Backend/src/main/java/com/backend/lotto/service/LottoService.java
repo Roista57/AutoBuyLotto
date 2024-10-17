@@ -31,11 +31,13 @@ public class LottoService {
 
             // ChromeOptions 설정 (헤드리스 모드 추가)
             ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless");  // 헤드리스 모드 (GUI 없음)
-            options.addArguments("--no-sandbox"); // 특정 Linux 환경에서 권한 문제 해결
-            options.addArguments("--disable-dev-shm-usage"); // /dev/shm 문제 해결
-            options.addArguments("--disable-gpu"); // GPU 사용 안 함 (헤드리스 모드에서 필요)
-            options.addArguments("--window-size=1920x1080"); // 기본 화면 크기 설정
+            options.setBinary("/usr/bin/google-chrome"); // Chrome 브라우저의 실행 파일 경로
+            // 기존 옵션들 추가
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920x1080");
 
             // WebDriver 초기화 (ChromeDriver)
             driver = new ChromeDriver(options);
