@@ -111,7 +111,7 @@ public class LottoService {
                 Collections.sort(result);
 
                 for (int i = 0; i < 6; i++) {
-                    String labelFor = "label[for='check645num" + result.get(i) + "']";
+                    String labelFor = "#check645num" + result.get(i)";
                     WebElement label = driver.findElement(By.cssSelector(labelFor));
                     label.click();
                 }
