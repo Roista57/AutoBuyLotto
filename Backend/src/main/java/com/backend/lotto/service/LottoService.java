@@ -67,7 +67,6 @@ public class LottoService {
             Thread.sleep(2000);
 
             // 헤드리스 모드에서는 윈도우 핸들 전환이 불필요할 수 있으므로 해당 코드 제거 또는 주석 처리
-            /*
             // 메인 페이지의 윈도우 핸들 저장
             String mainPageHandle = driver.getWindowHandle();
 
@@ -92,7 +91,6 @@ public class LottoService {
 
             // 메인 윈도우로 다시 전환
             driver.switchTo().window(mainPageHandle);
-            */
 
             driver.get("https://ol.dhlottery.co.kr/olotto/game/game645.do");
             Thread.sleep(500);
