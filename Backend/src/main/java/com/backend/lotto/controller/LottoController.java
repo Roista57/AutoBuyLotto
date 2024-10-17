@@ -1,5 +1,6 @@
 package com.backend.lotto.controller;
 
+import com.backend.lotto.dto.LottoBuyResponse;
 import com.backend.lotto.service.LottoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,12 @@ public class LottoController {
         }
 
         try {
-            int state = lottoService.performLottoAutomation(ticket);
+            LottoBuyResponse response = lottoService.performLottoAutomation(ticket);
+            int state = response.getState();
             if (state == 1) {
-                return ResponseEntity.ok("로또 구매 성공");
+                return ResponseEntity.ok("로또 구매 성공: "+response.getMsg());
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로또 구매 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로또 구매 실패: "+response.getMsg());
         } catch (InterruptedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

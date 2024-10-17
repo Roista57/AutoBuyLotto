@@ -1,14 +1,11 @@
 package com.backend.lotto.service;
 
+import com.backend.lotto.dto.LottoBuyResponse;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +22,10 @@ public class LottoService {
     @Value("${lotto.user.password}")
     private String userPasswordValue;
 
-    public int performLottoAutomation(int ticket) throws InterruptedException {
+    public LottoBuyResponse performLottoAutomation(int ticket) throws InterruptedException {
         WebDriver driver = null;
         int resultMessage = 0;
+        String message = "";
 
         try {
             // ChromeDriver를 자동으로 설치하도록 설정
@@ -36,10 +34,10 @@ public class LottoService {
 
             // ChromeOptions 설정 (헤드리스 모드 추가)
             ChromeOptions options = new ChromeOptions();
-            // options.addArguments("--headless");  // 헤드리스 모드 (GUI 없음)
+            options.addArguments("--headless");  // 헤드리스 모드 (GUI 없음)
             options.addArguments("--no-sandbox"); // 특정 Linux 환경에서 권한 문제 해결
             options.addArguments("--disable-dev-shm-usage"); // /dev/shm 문제 해결
-            // options.addArguments("--disable-gpu"); // GPU 사용 안 함 (헤드리스 모드에서 필요)
+            options.addArguments("--disable-gpu"); // GPU 사용 안 함 (헤드리스 모드에서 필요)
             options.addArguments("--window-size=1920x1080"); // 기본 화면 크기 설정
             options.addArguments("--remote-allow-origins=*"); // CORS 관련 오류 방지
             options.addArguments("--disable-popup-blocking"); // 팝업 차단 비활성화
@@ -96,7 +94,7 @@ public class LottoService {
             Thread.sleep(500);
 
             // 보유 예치금 확인
-            WebElement moneyBalance = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#moneyBalance")));
+            WebElement moneyBalance = driver.findElement(By.cssSelector("#moneyBalance"));
             System.out.println("보유 예치금: " + moneyBalance.getText());
 
             // 랜덤한 숫자 6개를 추출하는 코드
@@ -112,9 +110,9 @@ public class LottoService {
                 System.out.println("Shuffled list: " + result);
                 
                 for (int i = 0; i < 6; i++) {
-                    String labelFor = "label[for='check645num" + result.get(i) + "']";
-                    WebElement label = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(labelFor)));
-                    label.click();
+                    WebElement checkbox = driver.findElement(By.cssSelector("input[name='check645num'][value='" + result.get(i) + "']"));
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
+
                 }
 
                 WebElement btnSelectNum = driver.findElement(By.cssSelector("#btnSelectNum"));
@@ -123,33 +121,43 @@ public class LottoService {
             }
 
             // 구매 버튼 클릭
-            WebElement btnBuy = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#btnBuy")));
+            WebElement btnBuy = driver.findElement(By.cssSelector("#btnBuy"));
             btnBuy.click();
             Thread.sleep(500);
 
-            WebElement popupLayerConfirm = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#popupLayerConfirm > div > div.btns > input:nth-child(1)")));
+            WebElement popupLayerConfirm = driver.findElement(By.cssSelector("#popupLayerConfirm > div > div.btns > input:nth-child(1)"));
             popupLayerConfirm.click();
             Thread.sleep(500);
             
-            WebElement closeLayer = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#closeLayer")));
-            closeLayer.click();
-            Thread.sleep(500);
+            // 구매한도 알림 팝업의 visible 확인
+            WebElement recommend720Plus = driver.findElement(By.id("recommend720Plus"));
 
-            resultMessage = 1;
+            // 요소가 화면에 표시되는지 확인
+            if (recommend720Plus.isDisplayed()) {
+                message = "이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.";
+                System.out.println("이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.");
+                WebElement limitCloseLayer = driver.findElement(By.cssSelector("#recommend720Plus > div > div.btns > a:nth-child(2)"));
+                limitCloseLayer.click();
+                Thread.sleep(500);
+            } else {
+                WebElement closeLayer = driver.findElement(By.cssSelector("#closeLayer"));
+                closeLayer.click();
+                Thread.sleep(500);
+                resultMessage = 1;
+            }
         } catch (NoSuchElementException e) {
-            System.out.println("요소를 찾을 수 없습니다: " + e.getMessage());
+            message = "요소를 찾을 수 없습니다: " + e.getMessage();
         } catch (ElementClickInterceptedException e) {
-            System.out.println("요소를 클릭할 수 없습니다: " + e.getMessage());
+            message = "요소를 클릭할 수 없습니다: " + e.getMessage();
         } catch (InterruptedException e) {
-            System.out.println("쓰레드 인터럽트 오류: " + e.getMessage());
+            message = "쓰레드 인터럽트 오류: " + e.getMessage();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("오류가 발생했습니다: " + e.getMessage());
+            message = "오류가 발생했습니다: " + e.getMessage();
         } finally {
             if (driver != null) {
                 driver.quit();
             }
         }
-        return resultMessage;
+        return new LottoBuyResponse(resultMessage, message);
     }
 }
