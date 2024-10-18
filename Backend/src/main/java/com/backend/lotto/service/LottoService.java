@@ -116,7 +116,7 @@ public class LottoService {
                 }
 
                 WebElement btnSelectNum = driver.findElement(By.cssSelector("#btnSelectNum"));
-                btnSelectNum.click();
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnSelectNum);
                 Thread.sleep(500);
             }
 
