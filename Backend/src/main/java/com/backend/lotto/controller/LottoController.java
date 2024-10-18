@@ -3,6 +3,8 @@ package com.backend.lotto.controller;
 import com.backend.lotto.dto.LottoBuyResponse;
 import com.backend.lotto.service.LottoService;
 
+import com.backend.member.entity.Member;
+import com.backend.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/lotto")
@@ -23,9 +26,12 @@ public class LottoController {
     @Autowired
     private LottoService lottoService;
 
+    @Autowired
+    private MemberService memberService;
+
     // 로또 구매 자동화
     @GetMapping("/buy")
-    public ResponseEntity<String> buyLotto(@RequestParam(name = "ticket", required = true) int ticket) {
+    public ResponseEntity<String> buyLotto(@RequestParam(name = "ticket", required = true) int ticket, @RequestParam(name = "id", required = true) Long id) {
         // KST(한국 표준시) 시간대 기준으로 현재 시간 및 날짜 가져오기
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         DayOfWeek dayOfWeek = now.getDayOfWeek();
@@ -38,16 +44,26 @@ public class LottoController {
             String message = String.format("현재 KST 시간: %s. 현재는 로또 판매 시간이 아닙니다.", currentTimeFormatted);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         }
-
         try {
-            LottoBuyResponse response = lottoService.performLottoAutomation(ticket);
-            int state = response.getState();
-            if (state == 1) {
-                return ResponseEntity.ok("로또 구매 성공: "+response.getMsg());
+            Optional<Member> memberOptional = memberService.getMember(id);
+            LottoBuyResponse response = null;
+
+            if (memberOptional.isPresent()) {
+                Member decryptedMember = memberOptional.get();
+
+                // 회원의 ID와 복호화된 비밀번호를 LottoService에 설정
+                lottoService.setUserCredentials(decryptedMember.getUserid(), decryptedMember.getUserPassword());
+                response = lottoService.performLottoAutomation(ticket);
+                int state = response.getState();
+                if (state == 1) {
+                    return ResponseEntity.ok("로또 구매 성공: "+response.getMsg());
+                }
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로또 구매 실패: "+response.getMsg());
         } catch (InterruptedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

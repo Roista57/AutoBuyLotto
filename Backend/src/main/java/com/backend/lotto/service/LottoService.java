@@ -16,11 +16,13 @@ import java.util.*;
 
 @Service
 public class LottoService {
-    @Value("${lotto.user.id}")
     private String userIdValue;
-
-    @Value("${lotto.user.password}")
     private String userPasswordValue;
+
+    public void setUserCredentials(String userId, String userPassword) {
+        this.userIdValue = userId;
+        this.userPasswordValue = userPassword;
+    }
 
     public LottoBuyResponse performLottoAutomation(int ticket) throws InterruptedException {
         WebDriver driver = null;
