@@ -137,7 +137,7 @@ public class LottoService {
                 message = "이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.";
                 System.out.println("이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.");
                 WebElement limitCloseLayer = driver.findElement(By.cssSelector("#recommend720Plus > div > div.btns > a:nth-child(2)"));
-                limitCloseLayer.click();
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", limitCloseLayer);
                 Thread.sleep(500);
             } else {
                 WebElement closeLayer = driver.findElement(By.cssSelector("#closeLayer"));
