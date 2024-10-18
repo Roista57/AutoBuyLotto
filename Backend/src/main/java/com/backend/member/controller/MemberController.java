@@ -3,10 +3,12 @@ package com.backend.member.controller;
 
 import com.backend.member.entity.Member;
 import com.backend.member.service.MemberService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,10 +24,10 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<Member> registerMember(@Validated @RequestBody Member member) {
         try {
-            System.out.println(member.getUserid());
             Member savedMember = memberService.registerMember(member);
             return ResponseEntity.ok(savedMember);
         } catch (Exception e) {
+//            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -38,6 +40,17 @@ public class MemberController {
                          .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<Member>> getMembers() {
+        try {
+            List<Member> members = memberService.getAllMembers();
+            if (members.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(members, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

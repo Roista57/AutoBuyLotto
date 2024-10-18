@@ -5,6 +5,7 @@ import com.backend.member.entity.Member;
 import com.backend.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,9 +14,10 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final AESUtil aesUtil;
 
-    public MemberService(MemberRepository memberRepository) throws Exception {
+    // AESUtil을 생성자 주입으로 받도록 변경
+    public MemberService(MemberRepository memberRepository, AESUtil aesUtil) {
         this.memberRepository = memberRepository;
-        this.aesUtil = new AESUtil();  // 암호화 유틸리티 초기화
+        this.aesUtil = aesUtil;  // 주입된 AESUtil 사용
     }
 
     public Member registerMember(Member member) throws Exception {
@@ -31,5 +33,10 @@ public class MemberService {
             member.get().setUserPassword(decryptedPassword);  // 복호화된 비밀번호 설정
         }
         return member;
+    }
+
+    public List<Member> getAllMembers() {
+        // findAll()을 사용하여 모든 Member 엔티티를 조회
+        return memberRepository.findAll();
     }
 }
