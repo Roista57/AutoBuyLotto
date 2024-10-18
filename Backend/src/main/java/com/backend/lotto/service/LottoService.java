@@ -122,11 +122,11 @@ public class LottoService {
 
             // 구매 버튼 클릭
             WebElement btnBuy = driver.findElement(By.cssSelector("#btnBuy"));
-            btnBuy.click();
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnBuy);
             Thread.sleep(500);
 
             WebElement popupLayerConfirm = driver.findElement(By.cssSelector("#popupLayerConfirm > div > div.btns > input:nth-child(1)"));
-            popupLayerConfirm.click();
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", popupLayerConfirm);
             Thread.sleep(500);
             
             // 구매한도 알림 팝업의 visible 확인
@@ -141,7 +141,7 @@ public class LottoService {
                 Thread.sleep(500);
             } else {
                 WebElement closeLayer = driver.findElement(By.cssSelector("#closeLayer"));
-                closeLayer.click();
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", closeLayer);
                 Thread.sleep(500);
                 resultMessage = 1;
             }
