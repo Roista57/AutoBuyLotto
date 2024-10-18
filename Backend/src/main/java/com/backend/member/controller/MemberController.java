@@ -22,6 +22,7 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<Member> registerMember(@Validated @RequestBody Member member) {
         try {
+            System.out.println(member.getUserid());
             Member savedMember = memberService.registerMember(member);
             return ResponseEntity.ok(savedMember);
         } catch (Exception e) {
