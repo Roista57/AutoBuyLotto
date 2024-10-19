@@ -49,11 +49,11 @@ public class LottoController {
             LottoBuyResponse response = null;
 
             if (memberOptional.isPresent()) {
-                Member decryptedMember = memberOptional.get();
+                Member member = memberOptional.get();
 
                 // 회원의 ID와 복호화된 비밀번호를 LottoService에 설정
-                lottoService.setUserCredentials(decryptedMember.getUserid(), decryptedMember.getUserPassword());
-                response = lottoService.performLottoAutomation(ticket);
+                lottoService.setUserCredentials(member.getUserid(), member.getUserPassword());
+                response = lottoService.performLottoAutomation(ticket, member);
                 int state = response.getState();
                 if (state == 1) {
                     return ResponseEntity.ok("로또 구매 성공: "+response.getMsg());

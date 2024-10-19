@@ -1,6 +1,9 @@
 package com.backend.lotto.service;
 
 import com.backend.lotto.dto.LottoBuyResponse;
+import com.backend.lotto.entity.Lotto;
+import com.backend.lotto.repository.LottoRepository;
+import com.backend.member.entity.Member;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -8,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +20,23 @@ import java.util.*;
 
 @Service
 public class LottoService {
+    @Autowired
+    private LottoRepository lottoRepository;
+
     private String userIdValue;
     private String userPasswordValue;
+    private int ROUND;
 
     public void setUserCredentials(String userId, String userPassword) {
         this.userIdValue = userId;
         this.userPasswordValue = userPassword;
     }
 
-    public LottoBuyResponse performLottoAutomation(int ticket) throws InterruptedException {
+    public LottoBuyResponse performLottoAutomation(int ticket, Member member) throws InterruptedException {
         WebDriver driver = null;
         int resultMessage = 0;
         String message = "";
+        List<List<Integer>> purchasedNumbers = new ArrayList<>();
 
         try {
             // ChromeDriver를 자동으로 설치하도록 설정
@@ -95,6 +104,10 @@ public class LottoService {
             driver.get("https://ol.dhlottery.co.kr/olotto/game/game645.do");
             Thread.sleep(500);
 
+            // 회차
+            WebElement curRound = driver.findElement(By.cssSelector("#curRound"));
+            ROUND = Integer.parseInt(curRound.getText());
+
             // 보유 예치금 확인
             WebElement moneyBalance = driver.findElement(By.cssSelector("#moneyBalance"));
             System.out.println("보유 예치금: " + moneyBalance.getText());
@@ -109,6 +122,7 @@ public class LottoService {
 
                 List<Integer> result = list.subList(0, 6);
                 Collections.sort(result);
+                purchasedNumbers.add(result);
                 System.out.println("Shuffled list: " + result);
                 
                 for (int i = 0; i < 6; i++) {
@@ -154,6 +168,7 @@ public class LottoService {
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", closeLayer);
                 Thread.sleep(500);
                 resultMessage = 1;
+                saveLottoTickets(purchasedNumbers, member);
             }
         } catch (NoSuchElementException e) {
             message = "요소를 찾을 수 없습니다: " + e.getMessage();
@@ -169,5 +184,20 @@ public class LottoService {
             }
         }
         return new LottoBuyResponse(resultMessage, message);
+    }
+
+    private void saveLottoTickets(List<List<Integer>> purchasedNumbers, Member member) {
+        for (List<Integer> numbers : purchasedNumbers) {
+            Lotto lotto = new Lotto();
+            lotto.setMember(member);
+            lotto.setRound(ROUND);
+            lotto.setNum1(numbers.get(0));
+            lotto.setNum2(numbers.get(1));
+            lotto.setNum3(numbers.get(2));
+            lotto.setNum4(numbers.get(3));
+            lotto.setNum5(numbers.get(4));
+            lotto.setNum6(numbers.get(5));
+            lottoRepository.save(lotto);  // 데이터베이스에 저장
+        }
     }
 }

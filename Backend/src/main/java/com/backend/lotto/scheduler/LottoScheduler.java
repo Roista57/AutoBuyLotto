@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,14 +25,16 @@ public class LottoScheduler {
     @Autowired
     private LottoService lottoService;
 
-    // 5분마다 스케줄러 상태를 로그로 출력하는 함수
-    @Scheduled(fixedRate = 300000)  // 5분마다 실행 (300,000 밀리초 = 5분)
+    // 매 정각 마다 스케줄러 상태를 로그로 출력하는 함수
+    @Scheduled(cron = "0 0 * * * ?", zone = "Asia/Seoul")  // 매 1시간마다 정각에 실행
     public void logSchedulerStatus() {
-        logger.info("스케줄러가 정상적으로 실행되고 있습니다. (5분 스케줄러)");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        logger.info("스케줄러가 정상적으로 실행되고 있습니다. {날짜:" + now.format(formatter) + "}");
     }
 
     // 매일 6시에 로또 구매 시도 (한국 시간 기준)
-    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 9 * * ?", zone = "Asia/Seoul")
     public void scheduledLottoBuyForAllMembers() {
         logger.info("스케줄러가 시작되었습니다: 모든 회원의 로또 구매 시도");
 
@@ -51,7 +55,7 @@ public class LottoScheduler {
                     lottoService.setUserCredentials(decryptedMember.getUserid(), decryptedMember.getUserPassword());
 
                     // 로또 구매 자동화 실행 (티켓 수는 임의로 1로 설정)
-                    LottoBuyResponse response = lottoService.performLottoAutomation(1);
+                    LottoBuyResponse response = lottoService.performLottoAutomation(1, member);
 
                     if (response.getState() == 1) {
                         logger.info("{}님 로또 구매 성공: {}", decryptedMember.getUserid(), response.getMsg());
