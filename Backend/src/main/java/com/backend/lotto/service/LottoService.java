@@ -52,10 +52,13 @@ public class LottoService {
             options.addArguments("--window-size=1920x1080"); // 기본 화면 크기 설정
             options.addArguments("--remote-allow-origins=*"); // CORS 관련 오류 방지
             options.addArguments("--disable-popup-blocking"); // 팝업 차단 비활성화
-            options.addArguments("--disable-blink-features=AutomationControlled"); // 자동화 감지 방지
 
             // User-Agent를 데스크탑 환경으로 설정
             options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+
+            // Anti-Selenium 감지 방지 설정
+            options.addArguments("--disable-blink-features=AutomationControlled");
+            options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
 
 
             // WebDriver 초기화 (ChromeDriver)
@@ -106,6 +109,10 @@ public class LottoService {
 
             driver.get("https://ol.dhlottery.co.kr/olotto/game/game645.do");
             Thread.sleep(500);
+
+            // JavaScript를 사용하여 navigator.platform 조작
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("Object.defineProperty(navigator, 'platform', {get: function(){ return 'Win32'; }});");
 
             // 회차
             WebElement curRound = driver.findElement(By.cssSelector("#curRound"));

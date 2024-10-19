@@ -1,6 +1,7 @@
 package com.backend.lotto.entity;
 
 import com.backend.member.entity.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,7 @@ public class Lotto {
         this.createdAt = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
+    @JsonIgnore
     @OneToOne(mappedBy = "lotto", cascade = CascadeType.ALL)
     private LottoResult lottoResult;
 }
