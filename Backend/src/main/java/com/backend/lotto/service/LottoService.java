@@ -54,6 +54,9 @@ public class LottoService {
             options.addArguments("--disable-popup-blocking"); // 팝업 차단 비활성화
             options.addArguments("--disable-blink-features=AutomationControlled"); // 자동화 감지 방지
 
+            // User-Agent를 데스크탑 환경으로 설정
+            options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+
 
             // WebDriver 초기화 (ChromeDriver)
             driver = new ChromeDriver(options);
