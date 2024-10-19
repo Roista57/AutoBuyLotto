@@ -133,13 +133,21 @@ public class LottoService {
             
             // 구매한도 알림 팝업의 visible 확인
             WebElement recommend720Plus = driver.findElement(By.id("recommend720Plus"));
+            WebElement popupLayerAlert = driver.findElement(By.id("popupLayerAlert"));
 
             // 요소가 화면에 표시되는지 확인
             if (recommend720Plus.isDisplayed()) {
                 message = "이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.";
-                System.out.println("이번 주 로또 구매한도 5천원을 모두 채우셨습니다. 다음 회차 판매개시 후부터 다시 구매할 수 있습니다.");
+                System.out.println(message);
                 WebElement limitCloseLayer = driver.findElement(By.cssSelector("#recommend720Plus > div > div.btns > a:nth-child(2)"));
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", limitCloseLayer);
+                Thread.sleep(500);
+            } else if(popupLayerAlert.isDisplayed()){
+                WebElement layerMessage = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.noti > span"));
+                message = layerMessage.getText();
+                System.out.println(message);
+                WebElement layerBtn = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.btns > input"));
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", layerBtn);
                 Thread.sleep(500);
             } else {
                 WebElement closeLayer = driver.findElement(By.cssSelector("#closeLayer"));
