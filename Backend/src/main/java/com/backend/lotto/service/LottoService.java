@@ -166,14 +166,16 @@ public class LottoService {
                 WebElement limitCloseLayer = driver.findElement(By.cssSelector("#recommend720Plus > div > div.btns > a:nth-child(2)"));
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", limitCloseLayer);
                 Thread.sleep(500);
-            } else if(popupLayerAlert.isDisplayed()){
-                WebElement layerMessage = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.noti > span"));
-                message = layerMessage.getText();
-                System.out.println(message);
-                WebElement layerBtn = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.btns > input"));
-                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", layerBtn);
-                Thread.sleep(500);
-            } else {
+            }
+//            else if(popupLayerAlert.isDisplayed()){
+//                WebElement layerMessage = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.noti > span"));
+//                message = layerMessage.getText();
+//                System.out.println(message);
+//                WebElement layerBtn = driver.findElement(By.cssSelector("#popupLayerAlert > div > div.btns > input"));
+//                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", layerBtn);
+//                Thread.sleep(500);
+//            }
+            else {
                 WebElement closeLayer = driver.findElement(By.cssSelector("#closeLayer"));
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", closeLayer);
                 Thread.sleep(500);
