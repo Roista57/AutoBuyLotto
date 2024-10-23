@@ -105,9 +105,6 @@ public class LottoScheduler {
                 if (memberOptional.isPresent()) {
                     Member decryptedMember = memberOptional.get();
 
-                    // 회원의 ID와 복호화된 비밀번호를 LottoService에 설정
-                    lottoService.setUserCredentials(decryptedMember.getUserid(), decryptedMember.getUserPassword());
-
                     // 로또 구매 자동화 실행 (티켓 수는 임의로 1로 설정)
                     LottoBuyResponse response = lottoService.performLottoAutomation(1, member);
 

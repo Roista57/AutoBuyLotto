@@ -27,12 +27,7 @@ public class MemberService {
     }
 
     public Optional<Member> getMember(Long id) throws Exception {
-        Optional<Member> member = memberRepository.findById(id);
-        if (member.isPresent()) {
-            String decryptedPassword = aesUtil.decrypt(member.get().getUserPassword());
-            member.get().setUserPassword(decryptedPassword);  // 복호화된 비밀번호 설정
-        }
-        return member;
+        return memberRepository.findById(id);
     }
 
     public List<Member> getAllMembers() {

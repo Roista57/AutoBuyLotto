@@ -50,9 +50,7 @@ public class LottoController {
 
             if (memberOptional.isPresent()) {
                 Member member = memberOptional.get();
-
-                // 회원의 ID와 복호화된 비밀번호를 LottoService에 설정
-                lottoService.setUserCredentials(member.getUserid(), member.getUserPassword());
+                
                 response = lottoService.performLottoAutomation(ticket, member);
                 int state = response.getState();
                 if (state == 1) {

@@ -3,6 +3,7 @@ package com.backend.lotto.service;
 import com.backend.lotto.dto.LottoBuyResponse;
 import com.backend.lotto.entity.Lotto;
 import com.backend.lotto.repository.LottoRepository;
+import com.backend.member.config.AESUtil;
 import com.backend.member.entity.Member;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
@@ -22,14 +23,12 @@ import java.util.*;
 public class LottoService {
     @Autowired
     private LottoRepository lottoRepository;
+    private final AESUtil aesUtil;
 
-    private String userIdValue;
-    private String userPasswordValue;
     private int ROUND;
 
-    public void setUserCredentials(String userId, String userPassword) {
-        this.userIdValue = userId;
-        this.userPasswordValue = userPassword;
+    public LottoService(AESUtil aesUtil) {
+        this.aesUtil = aesUtil;
     }
 
     public LottoBuyResponse performLottoAutomation(int ticket, Member member) throws InterruptedException {
@@ -74,8 +73,10 @@ public class LottoService {
             WebElement userPw = driver.findElement(By.name("password"));
             WebElement login = driver.findElement(By.cssSelector("#article > div:nth-child(2) > div > form > div > div.inner > fieldset > div.form > a"));
 
-            userId.sendKeys(userIdValue);
-            userPw.sendKeys(userPasswordValue);
+            String decryptedPassword = aesUtil.decrypt(member.getUserPassword());
+
+            userId.sendKeys(member.getUserid());
+            userPw.sendKeys(decryptedPassword);
             login.click();
 
             // 필요에 따라 추가적인 대기 시간 설정
@@ -199,6 +200,8 @@ public class LottoService {
     }
 
     private void saveLottoTickets(List<List<Integer>> purchasedNumbers, Member member) {
+
+
         for (List<Integer> numbers : purchasedNumbers) {
             Lotto lotto = new Lotto();
             lotto.setMember(member);
